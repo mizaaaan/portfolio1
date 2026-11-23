@@ -14,23 +14,20 @@ npm run typecheck  # optional: tsc --noEmit
 
 Requires Node 18.18+ (Node 20+ recommended). Fonts (Space Grotesk, Inter) are fetched by `next/font` at build time, so the first build needs internet access.
 
-### Deploy: GitHub → Cloudflare Pages (free)
+### Deploy: GitHub → Cloudflare (free)
 
-The site is configured as a static export (`output: "export"` in `next.config.mjs`), so Cloudflare just serves the built `out/` folder.
+The site is a static export (`output: "export"` in `next.config.mjs`). `wrangler.jsonc` tells Cloudflare to serve the built `out/` folder, so no server or OpenNext adapter is needed.
 
-1. Upload this folder to a new GitHub repository (the `.gitignore` already excludes `node_modules` and `.next`).
-2. In Cloudflare: **Workers & Pages → Create → Pages → Connect to Git**, pick the repo.
+1. Upload this folder to a GitHub repository.
+2. In Cloudflare: **Workers & Pages → Create → Connect to Git**, pick the repo.
 3. Build settings:
-   - Framework preset: **Next.js (Static HTML Export)** or "None"
-   - Build command: `npm run build`
-   - Build output directory: `out`
-   - Environment variable (only if the build uses the wrong Node version): `NODE_VERSION` = `20` (a `.node-version` file is already included)
-4. **Save and Deploy.** Every push to `main` redeploys automatically.
-5. Custom domain: Pages project → **Custom domains**.
+   - **Build command:** `npm run build`
+   - **Deploy command:** `npx wrangler deploy`
+   - The project name must match `"name"` in `wrangler.jsonc` (change one to match the other).
+4. Save and deploy. Every push to `main` redeploys.
+5. Custom domain: project → **Settings → Domains & Routes**.
 
-Because images are served as-is (no Next image optimizer on Cloudflare), keep your replacement images compressed: WebP/AVIF, roughly under 300 KB each. `public/_headers` already sets long-term caching for images, videos and JS.
-
-Also works on Vercel/Netlify unchanged.
+Keep replacement images compressed (WebP/AVIF, roughly under 300 KB each), since Cloudflare serves them as-is. `public/_headers` sets long-term caching.
 
 ## What to replace
 
